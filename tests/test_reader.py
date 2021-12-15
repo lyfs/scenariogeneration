@@ -152,3 +152,15 @@ def test_parameter_reader(tmpdir,osc_fixture):
 
     assert osc_fixture.parameters == read_params
        
+def test_catalog_loader(tmpdir):
+    tmpcatalog = os.path.join(tmpdir,'my_catalog.xosc')
+    cf = xosc.CatalogFile()
+    cf.create_catalog(tmpcatalog,'TrajectoryCatalog','My first miscobject catalog','Mandolin')
+    orig = xosc.Controller('my_controller',xosc.Properties())
+    cf.add_to_catalog(orig)
+    cf.dump()
+
+    loader = xosc.CatalogLoader()
+    loader.load_catalog('my_catalog',tmpdir)
+    read = loader.parse(xosc.CatalogReference('my_catalog','my_controller'))
+    assert read == orig
